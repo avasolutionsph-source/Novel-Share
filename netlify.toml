@@ -1,0 +1,14 @@
+[build]
+  publish = "."
+
+# Redirect root to home page
+[[redirects]]
+  from = "/"
+  to = "/pages/home.html"
+  status = 302
+
+# SPA-style fallback for any unmatched routes
+[[redirects]]
+  from = "/*"
+  to = "/pages/home.html"
+  status = 404
