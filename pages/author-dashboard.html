@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Author Dashboard | NovelShare</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../assets/css/common.css" />
+  <style>
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .dashboard-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-new {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-new:hover {
+      background: #1557b0;
+      transform: translateY(-1px);
+    }
+    .btn-new svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-card .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .stat-card .icon svg {
+      width: 24px;
+      height: 24px;
+    }
+    .stat-card .icon.blue {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+    .stat-card .icon.green {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .stat-card .icon.purple {
+      background: #f3e8ff;
+      color: #9333ea;
+    }
+    .stat-card .icon.orange {
+      background: #ffedd5;
+      color: #ea580c;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+    .stat-card .label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    .stat-card .trend {
+      font-size: 0.8125rem;
+      margin-top: 8px;
+    }
+    .stat-card .trend.up {
+      color: #16a34a;
+    }
+    .stat-card .trend.down {
+      color: #dc2626;
+    }
+
+    /* Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    .section-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .section-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .section-header a {
+      color: var(--primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .section-header a:hover {
+      text-decoration: underline;
+    }
+
+    /* Works List */
+    .works-list {
+      padding: 0;
+    }
+    .work-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s;
+    }
+    .work-item:last-child {
+      border-bottom: none;
+    }
+    .work-item:hover {
+      background: #f8f9fa;
+    }
+    .work-cover {
+      width: 60px;
+      height: 80px;
+      background: var(--primary);
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background-size: cover;
+      background-position: center;
+    }
+    .work-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .work-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin: 0 0 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .work-meta {
+      display: flex;
+      gap: 16px;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .work-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .work-status.ongoing {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+    .work-status.completed {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .work-status.hiatus {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    .work-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .work-actions a {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .work-actions .edit {
+      background: #f0f4ff;
+      color: var(--primary);
+    }
+    .work-actions .edit:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    .work-actions .add-chapter {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .work-actions .add-chapter:hover {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    /* Recent Activity */
+    .activity-list {
+      padding: 16px 24px;
+    }
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .activity-icon.view {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+    .activity-icon.rating {
+      background: #fef3c7;
+      color: #d97706;
+    }
+    .activity-icon.comment {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .activity-icon.follow {
+      background: #f3e8ff;
+      color: #9333ea;
+    }
+    .activity-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+    .activity-content {
+      flex: 1;
+    }
+    .activity-text {
+      font-size: 0.875rem;
+      color: var(--text-dark);
+      margin-bottom: 2px;
+    }
+    .activity-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Empty States */
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .empty-state p {
+      margin: 0 0 16px;
+    }
+
+    @media (max-width: 900px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .work-item {
+        flex-direction: column;
+      }
+      .work-actions {
+        margin-top: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <header class="top-bar">
+      <a href="home.html" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 12c-4.8-3.3-10.4-4.4-16-4.4a6.6 6.6 0 0 0-6.6 6.6v28.2c0 1.1.9 2 2 2H18c4.7 0 9.3 1.5 13.2 4.2 3.9-2.7 8.5-4.2 13.2-4.2h6.6c1.1 0 2-.9 2-2V14.2A6.6 6.6 0 0 0 48 7.6C42.4 7.6 36.8 8.7 32 12Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">NovelShare</span>
+          <span class="logo-tagline">READ . WRITE . SHARE</span>
+        </div>
+      </a>
+      <nav class="nav-pills">
+        <a class="pill" href="library.html">Library</a>
+        <a class="pill" href="browse.html">Browse</a>
+      </nav>
+      <div class="profile-actions">
+        <div class="profile" id="profileBtn">
+          <div class="avatar">U</div>
+          <span class="username">User</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <main class="dashboard-container">
+      <div class="dashboard-header">
+        <h1>Author Dashboard</h1>
+        <div class="header-actions">
+          <a href="add-novel.html" class="btn-new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            New Novel
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+          </div>
+          <div class="value" id="totalNovels">0</div>
+          <div class="label">Total Novels</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <div class="value" id="totalViews">0</div>
+          <div class="label">Total Views</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div class="value" id="avgRating">0</div>
+          <div class="label">Avg Rating</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="value" id="totalChapters">0</div>
+          <div class="label">Total Chapters</div>
+        </div>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+        <!-- My Works -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2>My Novels</h2>
+            <a href="profile.html">View All</a>
+          </div>
+          <div class="works-list" id="worksList">
+            <div class="empty-state">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              <p>Loading your novels...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="section-card">
+          <div class="section-header">
+            <h2>Recent Activity</h2>
+          </div>
+          <div class="activity-list" id="activityList">
+            <div class="activity-item">
+              <div class="activity-icon view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">Activity will appear here</div>
+                <div class="activity-time">As you get views, ratings, and followers</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js"></script>
+  <script src="../assets/js/common.js"></script>
+  <script>
+    // State
+    let currentUser = null;
+    let authorNovels = [];
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        if (user) {
+          currentUser = user;
+          await loadDashboard();
+        } else {
+          showToast('Please log in to view your dashboard');
+          setTimeout(() => window.location.href = 'login.html', 1500);
+        }
+      } catch (e) {
+        console.error('Auth error:', e);
+        showToast('Please log in to view your dashboard');
+      }
+    });
+
+    async function loadDashboard() {
+      try {
+        // Load author's novels
+        const novels = await SupabaseDB.getAuthorNovels(currentUser.id);
+        authorNovels = novels || [];
+
+        // Update stats
+        updateStats(authorNovels);
+
+        // Render novels list
+        renderNovels(authorNovels);
+
+        // Update header profile
+        updateHeaderProfile();
+
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+        showToast('Error loading dashboard');
+      }
+    }
+
+    function updateStats(novels) {
+      const totalNovels = novels.length;
+      const totalViews = novels.reduce((sum, n) => sum + (n.view_count || 0), 0);
+      const totalChapters = novels.reduce((sum, n) => sum + (n.chapter_count || n.total_chapters || 0), 0);
+
+      // Calculate average rating
+      const novelsWithRating = novels.filter(n => n.rating_avg > 0);
+      const avgRating = novelsWithRating.length > 0
+        ? (novelsWithRating.reduce((sum, n) => sum + n.rating_avg, 0) / novelsWithRating.length).toFixed(1)
+        : '0';
+
+      document.getElementById('totalNovels').textContent = totalNovels;
+      document.getElementById('totalViews').textContent = formatNumber(totalViews);
+      document.getElementById('avgRating').textContent = avgRating;
+      document.getElementById('totalChapters').textContent = totalChapters;
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    }
+
+    function renderNovels(novels) {
+      const container = document.getElementById('worksList');
+
+      if (novels.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+            <p>You haven't created any novels yet</p>
+            <a href="add-novel.html" class="btn-new" style="display: inline-flex;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Create Your First Novel
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = novels.slice(0, 5).map(novel => {
+        const statusClass = novel.status === 'completed' ? 'completed' : novel.status === 'hiatus' ? 'hiatus' : 'ongoing';
+        const statusText = novel.status ? novel.status.charAt(0).toUpperCase() + novel.status.slice(1) : 'Ongoing';
+
+        return `
+          <div class="work-item">
+            <div class="work-cover" style="${novel.cover_image || novel.cover_url ? `background-image: url(${novel.cover_image || novel.cover_url})` : ''}">
+              ${!novel.cover_image && !novel.cover_url ? (novel.title || 'N').charAt(0) : ''}
+            </div>
+            <div class="work-info">
+              <h3 class="work-title">${novel.title}</h3>
+              <div class="work-meta">
+                <span>${novel.chapter_count || novel.total_chapters || 0} chapters</span>
+                <span>${formatNumber(novel.view_count || 0)} views</span>
+                <span>${novel.rating_avg ? novel.rating_avg.toFixed(1) : '0'} rating</span>
+              </div>
+              <span class="work-status ${statusClass}">${statusText}</span>
+            </div>
+            <div class="work-actions">
+              <a href="edit-novel.html?id=${novel.id}" class="edit">Edit</a>
+              <a href="add-chapter.html?novelId=${novel.id}" class="add-chapter">+ Chapter</a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function updateHeaderProfile() {
+      if (!currentUser) return;
+      try {
+        const profile = await SupabaseDB.getProfile(currentUser.id);
+        if (profile) {
+          document.querySelector('.profile .avatar').textContent = (profile.display_name || profile.username || 'U').charAt(0).toUpperCase();
+          document.querySelector('.profile .username').textContent = profile.username || 'User';
+        }
+      } catch (e) {
+        console.log('Could not load profile');
+      }
+    }
+  </script>
+</body>
+</html>

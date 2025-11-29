@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Novels - NovelShare</title>
+    <!-- Shared CSS (includes fonts) -->
+    <link rel="stylesheet" href="../assets/css/common.css">
+    <style>
+        /* Modern Browse Page Styles */
+
+        /* Override common.css page layout for browse */
+        body {
+            background: #f8fafc;
+        }
+
+        /* Use .page from common.css but override for browse layout */
+        .page.browse-page {
+            display: block;
+            padding: 0 var(--page-pad) 40px;
+        }
+
+        /* Horizontal layout for sidebar + content */
+        .browse-layout {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        /* Modern Sidebar */
+        .sidebar {
+            width: 220px;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 16px;
+            padding: 20px;
+            position: sticky;
+            top: 24px;
+            height: fit-content;
+            max-height: calc(100vh - 48px);
+            overflow-y: auto;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .sidebar-header {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-header h2 svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
+        .genre-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .genre-list li {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .genre-list li:hover {
+            background: rgba(102, 126, 234, 0.08);
+            color: var(--primary);
+        }
+
+        .genre-list li.active {
+            background: linear-gradient(135deg, var(--primary), #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .genre-list li .genre-count {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+        }
+
+        .genre-list li.active .genre-count {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            padding: 24px 32px;
+            background: #f8fafc;
+            min-width: 0;
+        }
+
+        /* Hero Header */
+        .browse-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 28px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .browse-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .browse-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: 5%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .browse-hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .browse-hero h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 8px;
+        }
+
+        .browse-hero p {
+            opacity: 0.9;
+            margin: 0 0 20px;
+            font-size: 0.95rem;
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 20px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .search-bar svg {
+            width: 20px;
+            height: 20px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .search-bar input {
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            width: 100%;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Filter Section */
+        .filters {
+            background: white;
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .filter-group h3 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 10px;
+        }
+
+        .filter-group .sub-label {
+            display: none;
+        }
+
+        .pill-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-row .pill {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pill-row .pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pill-row .pill.active {
+            background: linear-gradient(135deg, var(--primary), #5a7ee0);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Results Count */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-count {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .results-count strong {
+            color: var(--text-primary);
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Novel Card - Modern Design */
+        .card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card-cover {
+            position: relative;
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .card-cover::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+        }
+
+        .card:hover .card-cover::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(102, 126, 234, 0.3);
+            z-index: 1;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 2;
+        }
+
+        .status-badge.ongoing {
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+        }
+
+        .status-badge.completed {
+            background: rgba(99, 102, 241, 0.95);
+            color: white;
+        }
+
+        /* Library Badge */
+        .library-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            background: rgba(16, 185, 129, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .library-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Rating Badge */
+        .rating-badge {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            padding: 6px 10px;
+            border-radius: 8px;
+            z-index: 2;
+        }
+
+        .rating-badge svg {
+            width: 14px;
+            height: 14px;
+            color: #fbbf24;
+            fill: #fbbf24;
+        }
+
+        .rating-badge span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .card-body {
+            padding: 16px 20px;
+        }
+
+        .tags {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .card-body h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-body p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            background: linear-gradient(to right, rgba(102, 126, 234, 0.02), rgba(118, 75, 162, 0.02));
+        }
+
+        .meta-left {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .meta-left .icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .meta-left .icon.star {
+            color: #fbbf24;
+        }
+
+        .add-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, var(--primary), #5a7ee0);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(31, 111, 225, 0.35);
+        }
+
+        .add-btn.in-library {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .add-btn.in-library:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .empty-state-icon svg {
+            width: 36px;
+            height: 36px;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 0;
+        }
+
+        .page-link {
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-link:hover:not(:disabled):not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .page-link.active {
+            background: linear-gradient(135deg, var(--primary), #5a7ee0);
+            color: white;
+            border-color: transparent;
+        }
+
+        .page-link:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-ellipsis {
+            color: var(--text-muted);
+            padding: 0 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .browse-hero {
+                padding: 24px;
+            }
+
+            .browse-hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .filters {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="top-bar">
+        <a class="logo" href="home.html" aria-label="NovelShare Home">
+            <div class="logo-icon">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                    <path d="M32 12c-4.8-3.3-10.4-4.4-16-4.4a6.6 6.6 0 0 0-6.6 6.6v28.2c0 1.1.9 2 2 2H18c4.7 0 9.3 1.5 13.2 4.2 3.9-2.7 8.5-4.2 13.2-4.2h6.6c1.1 0 2-.9 2-2V14.2A6.6 6.6 0 0 0 48 7.6C42.4 7.6 36.8 8.7 32 12Zm0 6.9c4.3-2.6 9.2-3.9 14.2-3.9 1.1 0 2 .9 2 2v24.1h-4.6c-4.5 0-8.9 1.1-12.8 3.2v-25.4Zm-4 25.4c-3.9-2.1-8.3-3.2-12.8-3.2H10.6V17c0-1.1.9-2 2-2 5 0 9.9 1.3 14.2 3.9v25.4Z" fill="currentColor"></path>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <span class="logo-name">NovelShare</span>
+                <span class="logo-tagline">READ • WRITE • SHARE</span>
+            </div>
+        </a>
+
+        <nav class="nav-pills" aria-label="Main navigation">
+            <a class="pill" href="library.html">
+                <span class="pill-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/>
+                    </svg>
+                </span>
+                Library
+            </a>
+            <a class="pill active" href="browse.html" aria-current="page">
+                <span class="pill-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </span>
+                Browse
+            </a>
+            <a class="pill" href="search.html">
+                <span class="pill-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </span>
+                Search
+            </a>
+            <a class="pill" href="author-dashboard.html">
+                <span class="pill-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                        <path d="M2 2l7.586 7.586"/>
+                        <circle cx="11" cy="11" r="2"/>
+                    </svg>
+                </span>
+                Write
+            </a>
+        </nav>
+
+        <div class="profile-actions">
+            <button class="bell-btn" aria-label="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+            </button>
+            <a href="profile.html" class="profile">
+                <div class="avatar">U</div>
+                <span class="username">user</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="page browse-page">
+        <div class="browse-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/>
+                    </svg>
+                    Genres
+                </h2>
+            </div>
+            <ul class="genre-list">
+                <li class="active" data-genre="all">All Novels <span class="genre-count">12</span></li>
+                <li data-genre="fantasy">Fantasy <span class="genre-count">5</span></li>
+                <li data-genre="romance">Romance <span class="genre-count">0</span></li>
+                <li data-genre="action">Action <span class="genre-count">3</span></li>
+                <li data-genre="scifi">Sci-Fi <span class="genre-count">1</span></li>
+                <li data-genre="mystery">Mystery <span class="genre-count">1</span></li>
+                <li data-genre="horror">Horror <span class="genre-count">1</span></li>
+                <li data-genre="adventure">Adventure <span class="genre-count">1</span></li>
+                <li data-genre="urban">Urban <span class="genre-count">0</span></li>
+                <li data-genre="historical">Historical <span class="genre-count">0</span></li>
+                <li data-genre="comedy">Comedy <span class="genre-count">0</span></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <!-- Hero Section -->
+            <div class="browse-hero">
+                <div class="browse-hero-content">
+                    <h1>Discover Your Next Adventure</h1>
+                    <p>Explore thousands of novels across every genre imaginable</p>
+                    <div class="search-bar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <input type="search" placeholder="Search novels by title, author, or keyword..." aria-label="Search novels">
+                    </div>
+                </div>
+            </div>
+
+            <section class="filters">
+                <div class="filter-group">
+                    <h3>Filter By</h3>
+                    <p class="sub-label">Content Status</p>
+                    <div class="pill-row" data-filter-type="status">
+                        <button class="pill active" data-filter="all">All</button>
+                        <button class="pill" data-filter="completed">Completed</button>
+                        <button class="pill" data-filter="ongoing">Ongoing</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <h3>Sort By</h3>
+                    <div class="pill-row" data-filter-type="sort">
+                        <button class="pill active" data-sort="popular">Popular</button>
+                        <button class="pill" data-sort="rating">Rating</button>
+                        <button class="pill" data-sort="newest">Newly Released</button>
+                        <button class="pill" data-sort="updated">Updated</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="empty-state" style="display: none;">
+                <div class="empty-state-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </div>
+                <h3>No novels found</h3>
+                <p>Try adjusting your search or filters</p>
+            </div>
+
+            <!-- Results Header -->
+            <div class="results-header">
+                <span class="results-count">Showing <strong id="visibleCount">12</strong> novels</span>
+            </div>
+
+            <!-- Novel cards will be loaded dynamically from Supabase -->
+            <section class="card-grid">
+                <!-- Cards loaded via JavaScript -->
+            </section>
+
+            <nav class="pagination" aria-label="Pagination">
+                <button class="page-link" disabled aria-disabled="true">← Previous</button>
+                <button class="page-link active" aria-current="page">1</button>
+                <button class="page-link">2</button>
+                <button class="page-link">3</button>
+                <span class="page-ellipsis">...</span>
+                <button class="page-link">10</button>
+                <button class="page-link">Next →</button>
+            </nav>
+        </main>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <span>&copy; 2025 NovelShare. All Rights Reserved.</span>
+        <nav class="footer-links" aria-label="Footer navigation">
+            <a href="#">Contact Us</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </nav>
+    </footer>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Shared JavaScript -->
+    <script src="../assets/js/common.js"></script>
+    <script src="../assets/js/supabase.js"></script>
+    <!-- Page-specific JavaScript -->
+    <script>
+        // Store all novels for filtering/sorting
+        let allNovels = [];
+        let currentFilter = { genre: 'all', status: 'all', sort: 'popular' };
+
+        // Load novels from Supabase
+        async function loadNovelsFromSupabase() {
+            const cardGrid = document.querySelector('.card-grid');
+
+            // Show loading state
+            cardGrid.innerHTML = `
+                <div class="loading-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <div class="loading-spinner" style="width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+                    <p style="color: var(--text-muted);">Loading novels...</p>
+                </div>
+            `;
+
+            try {
+                // Fetch novels from Supabase
+                const { data: novels, error } = await window.supabaseClient
+                    .from('novels')
+                    .select('*')
+                    .order('view_count', { ascending: false });
+
+                if (error) throw error;
+
+                if (!novels || novels.length === 0) {
+                    cardGrid.innerHTML = '';
+                    updateEmptyState();
+                    return;
+                }
+
+                // Store novels for filtering
+                allNovels = novels;
+
+                // Render novels
+                renderNovels(novels);
+
+                // Update genre counts in sidebar
+                updateGenreCounts(novels);
+
+            } catch (error) {
+                console.error('Error loading novels:', error);
+                cardGrid.innerHTML = `
+                    <div class="error-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                        <p style="color: #ef4444;">Failed to load novels. Please refresh the page.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render novels to the card grid
+        function renderNovels(novels) {
+            const cardGrid = document.querySelector('.card-grid');
+
+            if (!novels || novels.length === 0) {
+                cardGrid.innerHTML = '';
+                updateEmptyState();
+                return;
+            }
+
+            const cardsHTML = novels.map(novel => {
+                const genres = novel.genres || [];
+                const primaryGenre = genres[0] || 'Fantasy';
+                const rating = novel.rating_avg ? parseFloat(novel.rating_avg).toFixed(2) : '0.00';
+                const statusClass = novel.status || 'ongoing';
+                const statusText = statusClass.charAt(0).toUpperCase() + statusClass.slice(1);
+
+                return `
+                    <article class="card"
+                        data-genre="${primaryGenre.toLowerCase()}"
+                        data-status="${statusClass}"
+                        data-rating="${rating}"
+                        data-title="${novel.title}"
+                        data-novel-id="${novel.id}"
+                        data-chapters="${novel.total_chapters || 0}"
+                        data-author="${novel.author}"
+                        data-popularity="${novel.view_count || 0}"
+                        data-updated="${new Date(novel.updated_at).getTime()}"
+                        data-published="${new Date(novel.created_at).getTime()}">
+                        <a class="card-link" href="novel.html?id=${novel.id}">
+                            <div class="card-cover" style="background-image: url('${novel.cover_image || 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&q=80'}');">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                                <div class="rating-badge">
+                                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.2 6.8.6-5.2 4.8 1.5 6.7L12 16.9l-6 3.4 1.5-6.7-5.2-4.8 6.8-.6z"/></svg>
+                                    <span>${rating}</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="tags"><span class="tag">${primaryGenre}</span></div>
+                                <h2>${novel.title}</h2>
+                                <p>${novel.description ? novel.description.substring(0, 100) + '...' : 'No description available.'}</p>
+                            </div>
+                        </a>
+                        <div class="card-meta">
+                            <div class="meta-left">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/>
+                                </svg>
+                                <span>${novel.total_chapters || 0} chapters</span>
+                            </div>
+                            <button class="add-btn" data-novel-id="${novel.id}">+ Add</button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            cardGrid.innerHTML = cardsHTML;
+
+            // Re-attach library button listeners
+            initLibraryButtons();
+            updateLibraryButtons();
+            updateEmptyState();
+        }
+
+        // Update genre counts in sidebar based on actual data
+        function updateGenreCounts(novels) {
+            const genreCounts = {};
+            novels.forEach(novel => {
+                (novel.genres || []).forEach(genre => {
+                    const key = genre.toLowerCase();
+                    genreCounts[key] = (genreCounts[key] || 0) + 1;
+                });
+            });
+
+            // Update sidebar counts
+            document.querySelectorAll('.genre-list li').forEach(li => {
+                const genre = li.dataset.genre;
+                const countSpan = li.querySelector('.genre-count');
+                if (countSpan) {
+                    if (genre === 'all') {
+                        countSpan.textContent = novels.length;
+                    } else {
+                        countSpan.textContent = genreCounts[genre] || 0;
+                    }
+                }
+            });
+        }
+
+        // Filter and sort novels
+        function applyFiltersAndSort() {
+            let filtered = [...allNovels];
+
+            // Apply genre filter
+            if (currentFilter.genre !== 'all') {
+                filtered = filtered.filter(novel => {
+                    const genres = (novel.genres || []).map(g => g.toLowerCase());
+                    return genres.includes(currentFilter.genre);
+                });
+            }
+
+            // Apply status filter
+            if (currentFilter.status !== 'all') {
+                filtered = filtered.filter(novel => novel.status === currentFilter.status);
+            }
+
+            // Apply sort
+            filtered.sort((a, b) => {
+                switch (currentFilter.sort) {
+                    case 'popular':
+                        return (b.view_count || 0) - (a.view_count || 0);
+                    case 'rating':
+                        return (parseFloat(b.rating_avg) || 0) - (parseFloat(a.rating_avg) || 0);
+                    case 'newest':
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    case 'updated':
+                        return new Date(b.updated_at) - new Date(a.updated_at);
+                    default:
+                        return 0;
+                }
+            });
+
+            renderNovels(filtered);
+        }
+
+        // Search novels
+        async function searchNovels(query) {
+            if (!query || query.trim() === '') {
+                applyFiltersAndSort();
+                return;
+            }
+
+            const q = query.toLowerCase();
+            const filtered = allNovels.filter(novel => {
+                const title = (novel.title || '').toLowerCase();
+                const author = (novel.author || '').toLowerCase();
+                const genres = (novel.genres || []).join(' ').toLowerCase();
+                return title.includes(q) || author.includes(q) || genres.includes(q);
+            });
+
+            renderNovels(filtered);
+        }
+
+        // Initialize library buttons
+        function initLibraryButtons() {
+            document.querySelectorAll('.add-btn[data-novel-id]').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Check if user is in guest mode
+                    if (GuestMode.isGuestMode()) {
+                        showToast('Please sign up to add novels to your library');
+                        setTimeout(() => {
+                            window.location.href = 'signup.html';
+                        }, 1500);
+                        return;
+                    }
+
+                    const novelId = btn.dataset.novelId;
+                    const card = btn.closest('.card');
+                    const title = card.dataset.title;
+                    const author = card.dataset.author;
+                    const chapters = parseInt(card.dataset.chapters) || 0;
+                    const coverStyle = card.querySelector('.card-cover').style.backgroundImage;
+                    const coverUrl = coverStyle ? coverStyle.replace(/url\(['"]?|['"]?\)/g, '') : '';
+
+                    if (LibrarySystem.isInLibrary(novelId)) {
+                        // Remove from library
+                        if (confirm(`Remove "${title}" from your library?`)) {
+                            LibrarySystem.removeFromLibrary(novelId);
+                            updateLibraryButtons();
+
+                            // Sync to Supabase if logged in
+                            try {
+                                const { data: { user } } = await window.supabaseClient.auth.getUser();
+                                if (user) {
+                                    await SupabaseDB.removeFromLibrary(user.id, novelId);
+                                }
+                            } catch (error) {
+                                console.error('Error syncing library removal to Supabase:', error);
+                            }
+                        }
+                    } else {
+                        // Add to library
+                        LibrarySystem.addToLibrary({
+                            novelId,
+                            title,
+                            author,
+                            coverImage: coverUrl,
+                            totalChapters: chapters,
+                            currentChapter: 0
+                        });
+                        updateLibraryButtons();
+
+                        // Sync to Supabase if logged in
+                        try {
+                            const { data: { user } } = await window.supabaseClient.auth.getUser();
+                            if (user) {
+                                await SupabaseDB.addToLibrary(user.id, novelId);
+                            }
+                        } catch (error) {
+                            console.error('Error syncing library addition to Supabase:', error);
+                        }
+
+                        // Show feedback
+                        btn.textContent = 'Added!';
+                        setTimeout(() => {
+                            updateLibraryButtons();
+                        }, 1000);
+                    }
+                });
+            });
+        }
+
+        // Update empty state helper (global scope for access from other functions)
+        function updateEmptyState() {
+            const emptyState = document.querySelector('.empty-state');
+            const resultsHeader = document.querySelector('.results-header');
+            const cardGrid = document.querySelector('.card-grid');
+            const visibleCards = document.querySelectorAll('.card:not([style*="display: none"])');
+            const count = visibleCards.length;
+
+            emptyState.style.display = count === 0 ? 'block' : 'none';
+            if (cardGrid) cardGrid.style.display = count === 0 ? 'none' : '';
+            resultsHeader.style.display = count === 0 ? 'none' : '';
+            document.getElementById('visibleCount').textContent = count;
+        }
+
+        // Update library button states (global scope)
+        function updateLibraryButtons() {
+            const library = LibrarySystem.getLibrary();
+            const libraryIds = library.map(item => item.novelId);
+
+            document.querySelectorAll('.add-btn[data-novel-id]').forEach(btn => {
+                const novelId = btn.dataset.novelId;
+                const card = btn.closest('.card');
+                if (!card) return;
+                const cover = card.querySelector('.card-cover');
+
+                if (libraryIds.includes(novelId)) {
+                    btn.textContent = '✓ In Library';
+                    btn.classList.add('in-library');
+
+                    // Add badge if not exists
+                    if (cover && !cover.querySelector('.library-badge')) {
+                        const badge = document.createElement('div');
+                        badge.className = 'library-badge';
+                        badge.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>`;
+                        cover.appendChild(badge);
+                    }
+                } else {
+                    btn.textContent = '+ Add';
+                    btn.classList.remove('in-library');
+
+                    // Remove badge if exists
+                    if (cover) {
+                        const badge = cover.querySelector('.library-badge');
+                        if (badge) badge.remove();
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load novels from Supabase on page load
+            loadNovelsFromSupabase();
+
+            // Search functionality with debounce
+            const searchInput = document.querySelector('.search-bar input');
+            let searchTimeout;
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        searchNovels(e.target.value);
+                    }, 300);
+                });
+            }
+
+            // Genre filter in sidebar
+            const genreItems = document.querySelectorAll('.genre-list li');
+            genreItems.forEach(genre => {
+                genre.addEventListener('click', () => {
+                    genreItems.forEach(g => g.classList.remove('active'));
+                    genre.classList.add('active');
+                    currentFilter.genre = genre.dataset.genre;
+                    applyFiltersAndSort();
+                });
+            });
+
+            // Status filter pills
+            const statusPills = document.querySelectorAll('[data-filter-type="status"] .pill');
+            statusPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    statusPills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    currentFilter.status = pill.dataset.filter;
+                    applyFiltersAndSort();
+                });
+            });
+
+            // Sort pills
+            const sortPills = document.querySelectorAll('[data-filter-type="sort"] .pill');
+            sortPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    sortPills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    currentFilter.sort = pill.dataset.sort;
+                    applyFiltersAndSort();
+                });
+            });
+        });
+    </script>
+    <style>
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>

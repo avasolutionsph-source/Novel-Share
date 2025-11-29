@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search | NovelShare</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../assets/css/common.css" />
+  <style>
+    .search-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Search Box */
+    .search-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .search-input-wrapper {
+      display: flex;
+      gap: 12px;
+    }
+    .search-input-wrapper input {
+      flex: 1;
+      padding: 16px 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 1.125rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .search-input-wrapper input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .search-btn {
+      padding: 16px 32px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .search-btn:hover {
+      background: #1557b0;
+    }
+    .search-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Filters */
+    .filters {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-select {
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-family: inherit;
+      background: #fff;
+      cursor: pointer;
+    }
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Results */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .results-header h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    .results-count {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* Novel Grid */
+    .novels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .novel-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+    }
+    .novel-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    .novel-cover {
+      width: 80px;
+      height: 110px;
+      background: var(--primary);
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 700;
+      background-size: cover;
+      background-position: center;
+    }
+    .novel-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .novel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin: 0 0 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .novel-author {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .novel-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .novel-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .novel-meta svg {
+      width: 14px;
+      height: 14px;
+    }
+    .novel-genres {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .genre-tag {
+      padding: 4px 8px;
+      background: #f0f4ff;
+      color: var(--primary);
+      border-radius: 4px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--text-muted);
+    }
+    .empty-state svg {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .empty-state h3 {
+      font-size: 1.25rem;
+      color: var(--text-dark);
+      margin: 0 0 8px;
+    }
+    .empty-state p {
+      margin: 0;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Recent Searches */
+    .recent-searches {
+      margin-top: 16px;
+    }
+    .recent-searches h4 {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin: 0 0 8px;
+    }
+    .recent-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .recent-tag {
+      padding: 6px 12px;
+      background: #f0f4ff;
+      color: var(--primary);
+      border: none;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .recent-tag:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    @media (max-width: 640px) {
+      .search-input-wrapper {
+        flex-direction: column;
+      }
+      .search-btn {
+        justify-content: center;
+      }
+      .novels-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <header class="top-bar">
+      <a href="home.html" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 12c-4.8-3.3-10.4-4.4-16-4.4a6.6 6.6 0 0 0-6.6 6.6v28.2c0 1.1.9 2 2 2H18c4.7 0 9.3 1.5 13.2 4.2 3.9-2.7 8.5-4.2 13.2-4.2h6.6c1.1 0 2-.9 2-2V14.2A6.6 6.6 0 0 0 48 7.6C42.4 7.6 36.8 8.7 32 12Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">NovelShare</span>
+          <span class="logo-tagline">READ . WRITE . SHARE</span>
+        </div>
+      </a>
+      <nav class="nav-pills">
+        <a class="pill" href="library.html">Library</a>
+        <a class="pill" href="browse.html">Browse</a>
+      </nav>
+      <div class="profile-actions">
+        <a href="login.html" class="pill" id="authBtn">Login</a>
+      </div>
+    </header>
+
+    <!-- Search Content -->
+    <main class="search-container">
+      <!-- Search Box -->
+      <div class="search-box">
+        <div class="search-input-wrapper">
+          <input type="text" id="searchInput" placeholder="Search for novels, authors, or genres..." autofocus>
+          <button class="search-btn" id="searchBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            Search
+          </button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+          <select class="filter-select" id="genreFilter">
+            <option value="">All Genres</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Romance">Romance</option>
+            <option value="Action">Action</option>
+            <option value="Mystery">Mystery</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Horror">Horror</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Drama">Drama</option>
+          </select>
+
+          <select class="filter-select" id="statusFilter">
+            <option value="">All Status</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+            <option value="hiatus">On Hiatus</option>
+          </select>
+
+          <select class="filter-select" id="sortFilter">
+            <option value="relevance">Most Relevant</option>
+            <option value="popular">Most Popular</option>
+            <option value="rating">Highest Rated</option>
+            <option value="recent">Recently Updated</option>
+          </select>
+        </div>
+
+        <!-- Recent Searches -->
+        <div class="recent-searches" id="recentSearches" style="display: none;">
+          <h4>Recent Searches</h4>
+          <div class="recent-tags" id="recentTags"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="resultsContainer">
+        <div class="empty-state" id="initialState">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <h3>Search for novels</h3>
+          <p>Enter a title, author name, or genre to find novels</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js"></script>
+  <script src="../assets/js/common.js"></script>
+  <script>
+    // State
+    let currentUser = null;
+    let recentSearches = JSON.parse(localStorage.getItem('novelshare_recent_searches') || '[]');
+
+    // DOM Elements
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const genreFilter = document.getElementById('genreFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const sortFilter = document.getElementById('sortFilter');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth
+      try {
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        if (user) {
+          currentUser = user;
+          document.getElementById('authBtn').textContent = 'Profile';
+          document.getElementById('authBtn').href = 'profile.html';
+        }
+      } catch (e) {
+        console.log('Not logged in');
+      }
+
+      // Load recent searches
+      renderRecentSearches();
+
+      // Check for query in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const query = urlParams.get('q');
+      if (query) {
+        searchInput.value = query;
+        performSearch();
+      }
+    });
+
+    // Search on Enter
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+
+    // Search button
+    searchBtn.addEventListener('click', performSearch);
+
+    // Filter changes
+    genreFilter.addEventListener('change', performSearch);
+    statusFilter.addEventListener('change', performSearch);
+    sortFilter.addEventListener('change', performSearch);
+
+    async function performSearch() {
+      const query = searchInput.value.trim();
+      const genre = genreFilter.value;
+      const status = statusFilter.value;
+      const sort = sortFilter.value;
+
+      if (!query && !genre) {
+        showToast('Please enter a search term or select a genre');
+        return;
+      }
+
+      // Save to recent searches
+      if (query && !recentSearches.includes(query)) {
+        recentSearches.unshift(query);
+        recentSearches = recentSearches.slice(0, 5);
+        localStorage.setItem('novelshare_recent_searches', JSON.stringify(recentSearches));
+        renderRecentSearches();
+      }
+
+      // Update URL
+      const params = new URLSearchParams();
+      if (query) params.set('q', query);
+      if (genre) params.set('genre', genre);
+      if (status) params.set('status', status);
+      window.history.replaceState({}, '', `search.html?${params.toString()}`);
+
+      // Show loading
+      resultsContainer.innerHTML = `
+        <div class="loading">
+          <div class="loading-spinner"></div>
+          <p>Searching...</p>
+        </div>
+      `;
+
+      try {
+        // Build query
+        let supabaseQuery = window.supabaseClient
+          .from('novels')
+          .select('*');
+
+        // Search by title or author
+        if (query) {
+          supabaseQuery = supabaseQuery.or(`title.ilike.%${query}%,author.ilike.%${query}%`);
+        }
+
+        // Filter by genre
+        if (genre) {
+          supabaseQuery = supabaseQuery.contains('genres', [genre]);
+        }
+
+        // Filter by status
+        if (status) {
+          supabaseQuery = supabaseQuery.eq('status', status);
+        }
+
+        // Sort
+        switch (sort) {
+          case 'popular':
+            supabaseQuery = supabaseQuery.order('view_count', { ascending: false });
+            break;
+          case 'rating':
+            supabaseQuery = supabaseQuery.order('rating_avg', { ascending: false });
+            break;
+          case 'recent':
+            supabaseQuery = supabaseQuery.order('updated_at', { ascending: false });
+            break;
+          default:
+            supabaseQuery = supabaseQuery.order('created_at', { ascending: false });
+        }
+
+        // Limit results
+        supabaseQuery = supabaseQuery.limit(20);
+
+        const { data: novels, error } = await supabaseQuery;
+
+        if (error) throw error;
+
+        renderResults(novels, query);
+
+      } catch (error) {
+        console.error('Search error:', error);
+        resultsContainer.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <h3>Search Error</h3>
+            <p>Something went wrong. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderResults(novels, query) {
+      if (!novels || novels.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <h3>No results found</h3>
+            <p>Try a different search term or filter</p>
+          </div>
+        `;
+        return;
+      }
+
+      resultsContainer.innerHTML = `
+        <div class="results-header">
+          <h2>Search Results ${query ? `for "${query}"` : ''}</h2>
+          <span class="results-count">${novels.length} novel${novels.length !== 1 ? 's' : ''} found</span>
+        </div>
+        <div class="novels-grid">
+          ${novels.map(novel => renderNovelCard(novel)).join('')}
+        </div>
+      `;
+    }
+
+    function renderNovelCard(novel) {
+      const genres = novel.genres || [];
+      return `
+        <a href="novel.html?id=${novel.id}" class="novel-card">
+          <div class="novel-cover" style="${novel.cover_image || novel.cover_url ? `background-image: url(${novel.cover_image || novel.cover_url})` : ''}">
+            ${!novel.cover_image && !novel.cover_url ? (novel.title || 'N').charAt(0) : ''}
+          </div>
+          <div class="novel-info">
+            <h3 class="novel-title">${novel.title}</h3>
+            <p class="novel-author">by ${novel.author || 'Unknown'}</p>
+            <div class="novel-meta">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                ${novel.rating_avg ? novel.rating_avg.toFixed(1) : '0'}
+              </span>
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                ${formatNumber(novel.view_count || 0)}
+              </span>
+              <span>${novel.chapter_count || novel.total_chapters || 0} ch</span>
+            </div>
+            <div class="novel-genres">
+              ${genres.slice(0, 2).map(g => `<span class="genre-tag">${g}</span>`).join('')}
+            </div>
+          </div>
+        </a>
+      `;
+    }
+
+    function formatNumber(num) {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+      return num.toString();
+    }
+
+    function renderRecentSearches() {
+      const container = document.getElementById('recentSearches');
+      const tagsContainer = document.getElementById('recentTags');
+
+      if (recentSearches.length === 0) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'block';
+      tagsContainer.innerHTML = recentSearches.map(term => `
+        <button class="recent-tag" onclick="searchTerm('${term}')">${term}</button>
+      `).join('');
+    }
+
+    function searchTerm(term) {
+      searchInput.value = term;
+      performSearch();
+    }
+  </script>
+</body>
+</html>

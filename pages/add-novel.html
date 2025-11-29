@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create New Novel | NovelShare</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/logo.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link rel="stylesheet" href="../assets/css/common.css" />
+  <style>
+    .form-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+    .page-header {
+      margin-bottom: 24px;
+    }
+    .page-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin: 0 0 4px;
+    }
+    .page-header .subtext {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+    .form-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+    .form-group {
+      margin-bottom: 24px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="url"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fff;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 111, 225, 0.1);
+    }
+    .form-group input.invalid {
+      border-color: #ef4444;
+    }
+    .form-group textarea {
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* Cover Upload */
+    .cover-upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8f9fa;
+    }
+    .cover-upload-area:hover {
+      border-color: var(--primary);
+      background: #f0f4ff;
+    }
+    .cover-upload-area.has-image {
+      padding: 16px;
+    }
+    .cover-upload-area svg {
+      width: 48px;
+      height: 48px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .cover-upload-area p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin: 0;
+    }
+    .cover-preview {
+      max-width: 200px;
+      max-height: 280px;
+      border-radius: 8px;
+      margin: 0 auto;
+    }
+    .cover-preview-container {
+      position: relative;
+      display: inline-block;
+    }
+    .remove-cover {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 28px;
+      height: 28px;
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .remove-cover svg {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+    }
+
+    /* Genre Tags */
+    .genre-input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      min-height: 50px;
+      background: #fff;
+    }
+    .genre-input-container:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 111, 225, 0.1);
+    }
+    .genre-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+    .genre-tag button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+    .genre-tag button svg {
+      width: 14px;
+      height: 14px;
+    }
+    .genre-input {
+      flex: 1;
+      min-width: 120px;
+      border: none;
+      outline: none;
+      font-size: 0.9375rem;
+      background: transparent;
+    }
+    .genre-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .genre-suggestion {
+      padding: 6px 12px;
+      background: #f0f4ff;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 20px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .genre-suggestion:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Form Actions */
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 24px;
+    }
+    .btn-cancel {
+      padding: 14px 28px;
+      background: #f8f9fa;
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-cancel:hover {
+      background: #e9ecef;
+    }
+    .btn-create {
+      padding: 14px 28px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-create:hover {
+      background: #1557b0;
+      transform: translateY(-1px);
+    }
+    .btn-create:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    @media (max-width: 640px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <header class="top-bar">
+      <a href="home.html" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 64 64" aria-hidden="true">
+            <path d="M32 12c-4.8-3.3-10.4-4.4-16-4.4a6.6 6.6 0 0 0-6.6 6.6v28.2c0 1.1.9 2 2 2H18c4.7 0 9.3 1.5 13.2 4.2 3.9-2.7 8.5-4.2 13.2-4.2h6.6c1.1 0 2-.9 2-2V14.2A6.6 6.6 0 0 0 48 7.6C42.4 7.6 36.8 8.7 32 12Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-name">NovelShare</span>
+          <span class="logo-tagline">READ . WRITE . SHARE</span>
+        </div>
+      </a>
+      <nav class="nav-pills">
+        <a class="pill" href="library.html">Library</a>
+        <a class="pill" href="browse.html">Browse</a>
+      </nav>
+      <div class="profile-actions">
+        <div class="profile" id="profileBtn">
+          <div class="avatar">U</div>
+          <span class="username">User</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Create Novel Form -->
+    <main class="form-container">
+      <div class="page-header">
+        <h2>Create New Novel</h2>
+        <p class="subtext">Start your new story and share it with the world</p>
+      </div>
+
+      <div class="form-card">
+        <form id="createNovelForm">
+          <!-- Title -->
+          <div class="form-group">
+            <label for="title">Novel Title <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="title" placeholder="Enter your novel title" required maxlength="100">
+            <div class="char-count"><span id="titleCount">0</span>/100</div>
+          </div>
+
+          <!-- Cover Image -->
+          <div class="form-group">
+            <label>Cover Image</label>
+            <div class="cover-upload-area" id="coverUploadArea">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              <p>Click to upload cover image or paste URL below</p>
+            </div>
+            <input type="file" id="coverInput" accept="image/*" hidden>
+            <input type="url" id="coverUrl" placeholder="Or paste image URL here..." style="margin-top: 12px;">
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="description">Synopsis <span style="color: #ef4444;">*</span></label>
+            <textarea id="description" placeholder="Write a compelling description of your novel..." required maxlength="2000"></textarea>
+            <div class="char-count"><span id="descCount">0</span>/2000</div>
+          </div>
+
+          <!-- Genre and Status -->
+          <div class="form-row">
+            <div class="form-group">
+              <label>Genres</label>
+              <div class="genre-input-container" id="genreContainer">
+                <input type="text" class="genre-input" id="genreInput" placeholder="Type and press Enter...">
+              </div>
+              <div class="genre-suggestions">
+                <button type="button" class="genre-suggestion" data-genre="Fantasy">Fantasy</button>
+                <button type="button" class="genre-suggestion" data-genre="Romance">Romance</button>
+                <button type="button" class="genre-suggestion" data-genre="Action">Action</button>
+                <button type="button" class="genre-suggestion" data-genre="Mystery">Mystery</button>
+                <button type="button" class="genre-suggestion" data-genre="Sci-Fi">Sci-Fi</button>
+                <button type="button" class="genre-suggestion" data-genre="Horror">Horror</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="status">Status</label>
+              <select id="status">
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+                <option value="hiatus">On Hiatus</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="form-group">
+            <label for="tags">Tags (comma separated)</label>
+            <input type="text" id="tags" placeholder="e.g., magic, adventure, friendship">
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="window.history.back()">Cancel</button>
+            <button type="submit" class="btn-create" id="createBtn">Create Novel</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/supabase.js"></script>
+  <script src="../assets/js/common.js"></script>
+  <script>
+    // State
+    let selectedGenres = [];
+    let coverImageUrl = null;
+    let currentUser = null;
+
+    // DOM Elements
+    const form = document.getElementById('createNovelForm');
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const genreInput = document.getElementById('genreInput');
+    const genreContainer = document.getElementById('genreContainer');
+    const coverUploadArea = document.getElementById('coverUploadArea');
+    const coverFileInput = document.getElementById('coverInput');
+    const coverUrlInput = document.getElementById('coverUrl');
+    const createBtn = document.getElementById('createBtn');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Check auth
+      try {
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        if (user) {
+          currentUser = user;
+          updateHeaderProfile();
+        }
+      } catch (e) {
+        console.log('Not logged in');
+      }
+
+      // Character counters
+      titleInput.addEventListener('input', () => {
+        document.getElementById('titleCount').textContent = titleInput.value.length;
+      });
+
+      descriptionInput.addEventListener('input', () => {
+        document.getElementById('descCount').textContent = descriptionInput.value.length;
+      });
+    });
+
+    // Update header with user info
+    async function updateHeaderProfile() {
+      if (!currentUser) return;
+      try {
+        const profile = await SupabaseDB.getProfile(currentUser.id);
+        if (profile) {
+          document.querySelector('.profile .avatar').textContent = (profile.display_name || profile.username || 'U').charAt(0).toUpperCase();
+          document.querySelector('.profile .username').textContent = profile.username || 'User';
+        }
+      } catch (e) {
+        console.log('Could not load profile');
+      }
+    }
+
+    // Genre handling
+    genreInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        addGenre(genreInput.value.trim());
+        genreInput.value = '';
+      }
+    });
+
+    document.querySelectorAll('.genre-suggestion').forEach(btn => {
+      btn.addEventListener('click', () => {
+        addGenre(btn.dataset.genre);
+      });
+    });
+
+    function addGenre(genre) {
+      if (!genre || selectedGenres.includes(genre) || selectedGenres.length >= 5) return;
+
+      selectedGenres.push(genre);
+
+      const tag = document.createElement('span');
+      tag.className = 'genre-tag';
+      tag.innerHTML = `
+        ${genre}
+        <button type="button" onclick="removeGenre('${genre}', this.parentElement)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      `;
+      genreContainer.insertBefore(tag, genreInput);
+    }
+
+    function removeGenre(genre, element) {
+      selectedGenres = selectedGenres.filter(g => g !== genre);
+      element.remove();
+    }
+
+    // Cover image handling
+    coverUploadArea.addEventListener('click', () => coverFileInput.click());
+
+    coverFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          coverImageUrl = e.target.result;
+          showCoverPreview(coverImageUrl);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    coverUrlInput.addEventListener('change', () => {
+      if (coverUrlInput.value) {
+        coverImageUrl = coverUrlInput.value;
+        showCoverPreview(coverImageUrl);
+      }
+    });
+
+    function showCoverPreview(url) {
+      coverUploadArea.classList.add('has-image');
+      coverUploadArea.innerHTML = `
+        <div class="cover-preview-container">
+          <img src="${url}" class="cover-preview" alt="Cover preview">
+          <button type="button" class="remove-cover" onclick="removeCover(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      `;
+    }
+
+    function removeCover(e) {
+      e.stopPropagation();
+      coverImageUrl = null;
+      coverUrlInput.value = '';
+      coverFileInput.value = '';
+      coverUploadArea.classList.remove('has-image');
+      coverUploadArea.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <p>Click to upload cover image or paste URL below</p>
+      `;
+    }
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = titleInput.value.trim();
+      const description = descriptionInput.value.trim();
+      const status = document.getElementById('status').value;
+      const tagsInput = document.getElementById('tags').value;
+      const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
+
+      // Validation
+      if (!title) {
+        showToast('Please enter a novel title');
+        titleInput.focus();
+        return;
+      }
+
+      if (!description) {
+        showToast('Please enter a synopsis');
+        descriptionInput.focus();
+        return;
+      }
+
+      // Check if user is logged in
+      if (!currentUser) {
+        showToast('Please log in to create a novel');
+        setTimeout(() => window.location.href = 'login.html', 1500);
+        return;
+      }
+
+      // Show loading state
+      createBtn.disabled = true;
+      createBtn.textContent = 'Creating...';
+
+      try {
+        // Get author name from profile
+        let authorName = 'Anonymous';
+        try {
+          const profile = await SupabaseDB.getProfile(currentUser.id);
+          authorName = profile?.display_name || profile?.username || 'Anonymous';
+        } catch (e) {
+          console.log('Could not get author name');
+        }
+
+        // Create novel in Supabase
+        const novelData = {
+          title: title,
+          authorId: currentUser.id,
+          authorName: authorName,
+          description: description,
+          coverImage: coverImageUrl || coverUrlInput.value || null,
+          genres: selectedGenres,
+          tags: tags,
+          status: status
+        };
+
+        const newNovel = await SupabaseDB.createNovel(novelData);
+
+        showToast('Novel created successfully!');
+
+        // Redirect to the new novel page or add chapter page
+        setTimeout(() => {
+          window.location.href = `add-chapter.html?novelId=${newNovel.id}`;
+        }, 1500);
+
+      } catch (error) {
+        console.error('Error creating novel:', error);
+        showToast('Error creating novel: ' + error.message);
+        createBtn.disabled = false;
+        createBtn.textContent = 'Create Novel';
+      }
+    });
+  </script>
+</body>
+</html>
