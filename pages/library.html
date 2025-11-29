@@ -1740,10 +1740,16 @@
                         timestamp: new Date(item.created_at).getTime()
                     }));
                 } else {
-                    const bookmarks = BookmarkSystem.getAllBookmarks();
-                    Object.entries(bookmarks).forEach(([novelId, novelBookmarks]) => {
-                        novelBookmarks.forEach(bookmark => {
-                            allBookmarks.push({ ...bookmark, novelId });
+                    const bookmarks = BookmarkSystem.getBookmarks();
+                    bookmarks.forEach(bookmark => {
+                        allBookmarks.push({
+                            id: bookmark.id,
+                            novelId: bookmark.novelId,
+                            chapterId: bookmark.chapterId,
+                            novelTitle: bookmark.novelTitle || 'Unknown Novel',
+                            chapterTitle: bookmark.chapterTitle || `Chapter ${bookmark.chapterId}`,
+                            note: bookmark.note || '',
+                            timestamp: bookmark.createdAt || Date.now()
                         });
                     });
                 }
@@ -1809,8 +1815,10 @@
                             }
                         }
 
-                        // Also remove from localStorage
-                        BookmarkSystem.removeBookmark(novelId, chapterId);
+                        // Also remove from localStorage using the bookmark ID
+                        if (bookmarkId) {
+                            BookmarkSystem.removeBookmark(bookmarkId);
+                        }
                         renderBookmarks();
                     });
                 });
