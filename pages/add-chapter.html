@@ -585,22 +585,44 @@
         </div>
       </a>
 
-      <nav class="nav-pills">
+      <nav class="nav-pills" aria-label="Main navigation">
         <a class="pill" href="library.html">
           <span class="pill-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 5h6v14H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm8 0h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-6V5z" fill="currentColor"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15z"/>
             </svg>
           </span>
           Library
         </a>
         <a class="pill" href="browse.html">
           <span class="pill-icon">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M11 5a6 6 0 1 1 0 12 6 6 0 0 1 0-12zm6.7 11.3L21 19.6" stroke-width="2" fill="none" stroke="currentColor" stroke-linecap="round"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
             </svg>
           </span>
           Browse
+        </a>
+        <a class="pill" href="search.html">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          </span>
+          Search
+        </a>
+        <a class="pill active" href="author-dashboard.html">
+          <span class="pill-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+          </span>
+          Write
         </a>
       </nav>
 
