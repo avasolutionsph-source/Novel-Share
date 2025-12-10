@@ -1084,13 +1084,19 @@
         const newChapter = await SupabaseDB.createChapter(chapterData);
 
         // Update novel's chapter count
+        const newChapterCount = selectedNovel.chapter_count ? selectedNovel.chapter_count + 1 : 1;
         await window.supabaseClient
           .from('novels')
           .update({
-            chapter_count: selectedNovel.chapter_count ? selectedNovel.chapter_count + 1 : 1,
+            chapter_count: newChapterCount,
             updated_at: new Date().toISOString()
           })
           .eq('id', selectedNovel.id);
+
+        // Update chapter count in library if this novel is in user's library
+        if (typeof LibrarySystem !== 'undefined' && LibrarySystem.updateChapterCount) {
+          LibrarySystem.updateChapterCount(selectedNovel.id, newChapterCount);
+        }
 
         isPublishing = false;
         publishBtn.textContent = originalText;

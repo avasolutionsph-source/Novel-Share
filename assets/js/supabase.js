@@ -786,15 +786,34 @@ const SupabaseSync = {
     try {
       const cloudLibrary = await SupabaseDB.getUserLibrary(user.id);
 
-      // Convert to local format
-      const localFormat = cloudLibrary.map(item => ({
-        novelId: item.novel_id,
-        title: item.novels?.title || 'Unknown',
-        author: item.novels?.author || 'Unknown',
-        coverImage: item.novels?.cover_image || null,
-        totalChapters: item.novels?.total_chapters || 0,
-        currentChapter: item.current_chapter,
-        addedAt: new Date(item.added_at).getTime()
+      // Convert to local format and fetch actual chapter counts
+      const localFormat = await Promise.all(cloudLibrary.map(async (item) => {
+        // Fetch actual chapter count from chapters table
+        let actualChapterCount = item.novels?.total_chapters || 0;
+        try {
+          const { count } = await supabase
+            .from('chapters')
+            .select('*', { count: 'exact', head: true })
+            .eq('novel_id', item.novel_id);
+          if (count !== null) {
+            actualChapterCount = count;
+          }
+        } catch (e) {
+          // Use total_chapters as fallback
+        }
+
+        return {
+          id: item.novel_id,
+          novelId: item.novel_id,
+          title: item.novels?.title || 'Unknown',
+          author: item.novels?.author || 'Unknown',
+          coverImage: item.novels?.cover_image || null,
+          cover: item.novels?.cover_image || null,
+          totalChapters: actualChapterCount,
+          chapters: actualChapterCount,
+          currentChapter: item.current_chapter || 0,
+          addedAt: new Date(item.added_at).getTime()
+        };
       }));
 
       // Update localStorage
