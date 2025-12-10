@@ -493,16 +493,41 @@ const SupabaseDB = {
 
   // --- Author/Novel CRUD Operations ---
 
-  // Get novels by author
+  // Get novels by author with actual chapter counts
   async getAuthorNovels(authorId) {
-    const { data, error } = await supabase
+    // First get all novels for this author
+    const { data: novels, error } = await supabase
       .from('novels')
       .select('*')
       .eq('author_id', authorId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data;
+    if (!novels || novels.length === 0) return [];
+
+    // For each novel, get the actual chapter count from chapters table
+    const novelsWithCounts = await Promise.all(
+      novels.map(async (novel) => {
+        try {
+          const { count, error: countError } = await supabase
+            .from('chapters')
+            .select('*', { count: 'exact', head: true })
+            .eq('novel_id', novel.id);
+
+          return {
+            ...novel,
+            chapter_count: countError ? (novel.total_chapters || 0) : (count || 0)
+          };
+        } catch (e) {
+          return {
+            ...novel,
+            chapter_count: novel.total_chapters || 0
+          };
+        }
+      })
+    );
+
+    return novelsWithCounts;
   },
 
   // Create a new novel
